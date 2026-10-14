@@ -1,0 +1,12 @@
+{
+  "name": "nptel-applied-accelerated-ai-prep",
+  "version": "1.0.0",
+  "description": "Interactive Randomized Quiz & Study Hub for NPTEL Applied Accelerated Artificial Intelligence (IIT Guwahati)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["nptel", "ai", "accelerated-computing", "quiz", "iit-guwahati", "deep-learning"],
+  "author": "NPTEL AI Team",
+  "license": "MIT"
+}

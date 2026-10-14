@@ -1,0 +1,25 @@
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Node dependencies
+node_modules/
+npm-debug.log*
+
+# Python bytecode & temporary processing scripts
+__pycache__/
+*.pyc
+generate_dataset.py
+enrich_dataset.py
+build_complete_dataset.py
+parse_assignments.py
+raw_extracted_questions.json
+nptel_quiz_dataset.json
+nptel_quiz_dataset_enriched.json
+
+# Large video binaries and archives (>25MB)
+*.mp4
+*.tar.gz
+*.zip

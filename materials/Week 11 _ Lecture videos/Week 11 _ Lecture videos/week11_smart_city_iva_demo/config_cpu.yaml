@@ -1,0 +1,34 @@
+model:
+  name: yolo26n.pt
+  conf: 0.30
+  iou: 0.70
+  imgsz: 640
+  tracker: bytetrack.yaml
+  device: cpu
+  classes: [0, 1, 2, 3, 5, 7]
+
+analytics:
+  restricted_zone:
+    enabled: true
+    name: restricted_zone
+    points:
+      - [0.55, 0.25]
+      - [0.95, 0.25]
+      - [0.95, 0.95]
+      - [0.55, 0.95]
+    classes: [person]
+  loiter_seconds: 4.0
+  count_line:
+    enabled: true
+    name: main_line
+    p1: [0.08, 0.62]
+    p2: [0.92, 0.62]
+    classes: [person, bicycle, car, motorcycle, bus, truck]
+  crowd_threshold: 4
+  crowd_cooldown_seconds: 8.0
+  stale_track_seconds: 3.0
+
+output:
+  save_video: true
+  draw_track_ids: true
+  draw_confidence: true

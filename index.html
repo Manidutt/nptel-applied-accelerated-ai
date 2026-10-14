@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NPTEL Prep Master — Applied Accelerated Artificial Intelligence (IIT Guwahati)</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX for Beautiful Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Canvas Confetti for Celebration Effects -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Application Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Navigation Bar
+       ========================================================================= -->
+  <nav class="navbar">
+    <div class="nav-container">
+      
+      <!-- Brand Logo & Title -->
+      <div class="brand-wrapper" id="brandLogo">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>NPTEL PREP MASTER <span class="brand-badge">IIT GUWAHATI</span></h1>
+          <div class="brand-subtitle">Applied Accelerated Artificial Intelligence · 150 Solved Assignment Questions</div>
+        </div>
+      </div>
+
+      <!-- Center Navigation Tabs -->
+      <div class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="play">
+          <span>🚀</span> Quiz Arena
+        </button>
+        <button class="nav-tab-btn" data-tab="bank">
+          <span>📚</span> Question Bank
+        </button>
+        <button class="nav-tab-btn" data-tab="analytics">
+          <span>📊</span> Mastery & History
+        </button>
+        <button class="nav-tab-btn" data-tab="bookmarks">
+          <span>🔖</span> Saved & Weak Areas
+        </button>
+      </div>
+
+      <!-- Right Actions (Streak, Theme, Sound, Custom) -->
+      <div class="nav-actions">
+        <div class="streak-pill" title="Daily Practice Streak">
+          <span>🔥</span> <span id="streakValue">1</span>
+        </div>
+        <button class="nav-icon-btn" id="soundToggleBtn" title="Toggle Sound Effects">🔊</button>
+        <button class="nav-icon-btn" id="themeToggleBtn" title="Toggle Theme (Dark / Light / Matrix)">🌙</button>
+        <button class="btn btn-sm btn-primary" id="openCustomModalBtn">
+          <span>⚙️</span> Custom Quiz
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       Main Content Container
+       ========================================================================= -->
+  <main class="main-wrapper">
+
+    <!-- =======================================================================
+         VIEW 1: PLAY ARENA & DASHBOARD
+         ======================================================================= -->
+    <section id="playView" class="view-section active">
+      
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <span>✨</span> NPTEL Online Certification Course Prep · Weeks 1 to 10
+          </div>
+          <h2 class="hero-title">
+            Master <span class="gradient-text">Applied Accelerated AI</span> with Randomized Quizzes
+          </h2>
+          <p class="hero-desc">
+            Practice 150 official IIT Guwahati assignment questions with in-depth explanations,
+            architectural formulas, and lecture slide deep dives. Build exam confidence with rapid drills,
+            full-length mock tests, or week-by-week deep practice.
+          </p>
+          <div class="hero-cta-group">
+            <button class="btn btn-primary" onclick="startRapidQuiz()">
+              <span>⚡</span> Rapid Quiz (5 MCQs)
+            </button>
+            <button class="btn btn-secondary" onclick="startGeneralQuiz(15)">
+              <span>🎯</span> General Quiz (15 Qs)
+            </button>
+            <button class="btn btn-emerald" onclick="startExamQuiz(30)">
+              <span>🏆</span> Comprehensive Mock Exam (30 Qs)
+            </button>
+            <button class="btn btn-secondary" id="openCustomModalHeroBtn">
+              <span>⚙️</span> Custom Builder
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon indigo">📚</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statTotalQuestions">150</div>
+            <div class="stat-label">Total Verified Questions</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon emerald">🎯</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statAccuracy">0%</div>
+            <div class="stat-label">Average Accuracy</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon cyan">⚡</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statQuizzesTaken">0</div>
+            <div class="stat-label">Quizzes Completed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">⚠️</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statWeakCount">0</div>
+            <div class="stat-label">Weak Questions to Drill</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Practice Modes Grid -->
+      <div class="section-header">
+        <div>
+          <h2><span>🎮</span> Select Practice Category</h2>
+          <p>Choose your preferred training format based on your available study time</p>
+        </div>
+      </div>
+
+      <div class="mode-grid">
+        <!-- Rapid Fire -->
+        <div class="mode-card rapid" onclick="startRapidQuiz()">
+          <div>
+            <span class="mode-badge amber">⚡ Fast Recall</span>
+            <h3 class="mode-title">Rapid Fire Drill</h3>
+            <p class="mode-desc">
+              5 fast-paced randomized questions with instant answer explanations. Ideal for high-tempo daily revision between study sessions.
+            </p>
+          </div>
+          <div class="mode-meta">
+            <div class="mode-meta-item"><span>📝</span> 5 Questions</div>
+            <div class="mode-meta-item"><span>⏱️</span> ~4 Minutes</div>
+            <div class="mode-meta-item" style="color:var(--accent-amber); font-weight:700;">Start Drill →</div>
+          </div>
+        </div>
+
+        <!-- General Practice -->
+        <div class="mode-card general" onclick="startGeneralQuiz(15)">
+          <div>
+            <span class="mode-badge indigo">🎯 Standard Drill</span>
+            <h3 class="mode-title">General Practice Quiz</h3>
+            <p class="mode-desc">
+              15 balanced questions drawn randomly across all 10 weeks of the syllabus. Covers architectures, containers, frameworks, and distributed models.
+            </p>
+          </div>
+          <div class="mode-meta">
+            <div class="mode-meta-item"><span>📝</span> 15 Questions</div>
+            <div class="mode-meta-item"><span>⏱️</span> 15 Minutes</div>
+            <div class="mode-meta-item" style="color:var(--accent-indigo); font-weight:700;">Start Quiz →</div>
+          </div>
+        </div>
+
+        <!-- Comprehensive Mock Exam -->
+        <div class="mode-card exam" onclick="startExamQuiz(30)">
+          <div>
+            <span class="mode-badge emerald">🏆 Exam Simulation</span>
+            <h3 class="mode-title">Comprehensive Mock Exam</h3>
+            <p class="mode-desc">
+              30 timed questions simulating real NPTEL proctored test conditions. Includes interactive Question Navigation Palette, review flags, and detailed score report.
+            </p>
+          </div>
+          <div class="mode-meta">
+            <div class="mode-meta-item"><span>📝</span> 30 Questions</div>
+            <div class="mode-meta-item"><span>⏱️</span> 45 Minutes</div>
+            <div class="mode-meta-item" style="color:var(--accent-emerald); font-weight:700;">Enter Exam →</div>
+          </div>
+        </div>
+
+        <!-- Weak Areas Drill -->
+        <div class="mode-card custom" onclick="startWeakAreasQuiz()">
+          <div>
+            <span class="mode-badge purple">⚠️ Targeted Fix</span>
+            <h3 class="mode-title">Weak Areas Revision</h3>
+            <p class="mode-desc">
+              Automatically aggregates every question you answered incorrectly in past attempts so you can convert mistakes into mastery.
+            </p>
+          </div>
+          <div class="mode-meta">
+            <div class="mode-meta-item"><span>🎯</span> Dynamic Size</div>
+            <div class="mode-meta-item"><span>🔄</span> Mistake Drill</div>
+            <div class="mode-meta-item" style="color:var(--accent-purple); font-weight:700;">Practice →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Week-Wise Practice Grid -->
+      <div class="section-header">
+        <div>
+          <h2><span>📅</span> Week-Wise Assignment Practice</h2>
+          <p>Master specific weekly modules and their complete 15-question assignment sets</p>
+        </div>
+      </div>
+
+      <div class="weeks-grid" id="weeksGrid">
+        <!-- Week cards generated dynamically by app.js -->
+      </div>
+
+      <!-- Topic-Wise Tracks -->
+      <div class="section-header">
+        <div>
+          <h2><span>🏷️</span> Topic-Wise Concept Tracks</h2>
+          <p>Concentrate your practice on specific technical domains</p>
+        </div>
+      </div>
+
+      <div class="topic-tracks-grid">
+        <div class="topic-track-card" onclick="startTopicQuiz('Hardware & Architecture')">
+          <div class="topic-track-icon">💻</div>
+          <div class="topic-track-info">
+            <h4>Hardware Architecture & Memory Wall</h4>
+            <p>Roofline model, DRAM latency, Out-of-Order execution, ROB, Amdahl's Law</p>
+          </div>
+        </div>
+
+        <div class="topic-track-card" onclick="startTopicQuiz('Containers & Cloud')">
+          <div class="topic-track-icon">🐳</div>
+          <div class="topic-track-info">
+            <h4>Containers, CUDA & Cloud Orchestration</h4>
+            <p>Docker layers, nvidia-docker, GPU pods, Kubernetes StatefulSets, Istio</p>
+          </div>
+        </div>
+
+        <div class="topic-track-card" onclick="startTopicQuiz('Framework Acceleration')">
+          <div class="topic-track-icon">⚡</div>
+          <div class="topic-track-info">
+            <h4>PyTorch & TensorFlow Acceleration</h4>
+            <p>torch.profiler, AMP mixed precision, tf.data AUTOTUNE, XLA compilation</p>
+          </div>
+        </div>
+
+        <div class="topic-track-card" onclick="startTopicQuiz('LLMs & Fine-Tuning')">
+          <div class="topic-track-icon">🧠</div>
+          <div class="topic-track-info">
+            <h4>LLMs, Fine-Tuning & Quantization</h4>
+            <p>Next-token objective, LoRA rank decomposition, AdamW memory, QLoRA</p>
+          </div>
+        </div>
+
+        <div class="topic-track-card" onclick="startTopicQuiz('Distributed Training')">
+          <div class="topic-track-icon">🌐</div>
+          <div class="topic-track-info">
+            <h4>Distributed Training & Parallelism</h4>
+            <p>DDP multi-processing, Ring All-Reduce, NCCL collectives, FSDP / ZeRO-3</p>
+          </div>
+        </div>
+
+        <div class="topic-track-card" onclick="startTopicQuiz('Data Engineering')">
+          <div class="topic-track-icon">📊</div>
+          <div class="topic-track-info">
+            <h4>Big Data Engineering & Scaling</h4>
+            <p>Spark shuffling, Dask vs Pandas, DAG lineage, Linear LR scaling rule</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         VIEW 2: ACTIVE QUIZ ARENA
+         ======================================================================= -->
+    <section id="quizArenaView" class="view-section">
+      <div class="quiz-arena-view">
+        
+        <!-- Sticky Quiz HUD Bar -->
+        <div class="quiz-hud">
+          <div class="quiz-hud-left">
+            <span class="quiz-mode-pill" id="quizModeTitle">General Practice</span>
+            <span class="quiz-progress-text" id="quizProgressNum">1 of 15</span>
+          </div>
+          
+          <div class="quiz-hud-center">
+            <div class="hud-progress-bar-wrap">
+              <div class="hud-progress-bar" id="hudProgressBar"></div>
+            </div>
+          </div>
+
+          <div class="quiz-hud-right">
+            <div class="quiz-timer-pill" id="quizTimerPill">
+              <span>⏱️</span> <span id="quizTimerDisplay">15:00</span>
+            </div>
+            <button class="btn-icon-subtle" id="quizBookmarkBtn" title="Bookmark Question (F)">☆</button>
+            <button class="btn btn-sm btn-secondary" id="openPaletteBtn" title="Toggle Question Palette (P)">
+              <span>📑</span> Palette
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Question Card -->
+        <div class="question-card-main" id="questionCardMain">
+          
+          <!-- Meta Tags -->
+          <div class="question-meta-tags">
+            <span class="q-tag week" id="qTagWeek">Week 1</span>
+            <span class="q-tag" id="qTagCategory">Hardware Architecture</span>
+            <span class="q-tag concept" id="qTagConcept">Memory Wall</span>
+          </div>
+
+          <!-- Question Title & Markdown / Code -->
+          <div class="question-text-title" id="questionTextTitle">
+            Loading Question Statement...
+          </div>
+
+          <!-- Math Formula Display (if question has formula) -->
+          <div class="formula-block" id="questionFormulaBlock" style="display:none;"></div>
+
+          <!-- Options Container -->
+          <div class="options-list" id="optionsListContainer">
+            <!-- Options rendered by app.js -->
+          </div>
+
+          <!-- Controls Row -->
+          <div class="quiz-controls-row">
+            <button class="btn btn-secondary" id="quizPrevBtn">
+              <span>←</span> Previous
+            </button>
+            
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <button class="btn btn-secondary" id="quizFlagReviewBtn" title="Flag for Review">
+                🏳️ Flag for Review
+              </button>
+              <button class="btn btn-primary" id="quizNextBtn">
+                Next <span>→</span>
+              </button>
+              <button class="btn btn-emerald" id="quizSubmitBtn" style="display:none;">
+                <span>✓</span> Submit Quiz
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Detailed Explanation & Deep Dive Drawer (Instant Practice Mode) -->
+        <div class="explanation-panel" id="explanationPanel">
+          <div class="exp-badge-row">
+            <span class="exp-status-tag correct" id="expStatusTag">✓ Correct Answer</span>
+            <span class="exp-lecture-ref" id="expLectureRef">Week 1 Lecture Notes</span>
+          </div>
+
+          <div class="exp-section-title">
+            <span>📋</span> Official IIT Guwahati Detailed Solution
+          </div>
+          <div class="exp-text-official" id="expOfficialText">
+            Explanation text...
+          </div>
+
+          <div class="exp-section-title">
+            <span>💡</span> Key Concept & Course Takeaway
+          </div>
+          <div class="deep-dive-box" id="expDeepDiveText">
+            Deep dive context...
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Question Navigation Palette Drawer -->
+    <div class="palette-drawer" id="paletteDrawer">
+      <div class="palette-header">
+        <h3 style="font-size:1.1rem; font-weight:700;">Question Palette</h3>
+        <button class="modal-close-btn" id="closePaletteBtn">✕</button>
+      </div>
+      <div class="palette-legend">
+        <div class="legend-item"><span class="legend-dot answered"></span> Answered</div>
+        <div class="legend-item"><span class="legend-dot review"></span> Flagged</div>
+        <div class="legend-item"><span class="legend-dot unvisited"></span> Unvisited</div>
+      </div>
+      <div class="palette-matrix" id="paletteMatrix">
+        <!-- Palette buttons rendered by app.js -->
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         VIEW 3: QUIZ RESULTS & SCORE DASHBOARD
+         ======================================================================= -->
+    <section id="resultsView" class="view-section">
+      <div class="results-view">
+        
+        <!-- Results Hero Card -->
+        <div class="results-hero-card">
+          <span class="result-badge-tier elite-gold" id="resultTierBadge">
+            🏆 Elite + Gold (Top 1% Certification Standard)
+          </span>
+          <div class="result-score-large" id="resultScoreDisplay">
+            15 <span>/ 15</span>
+          </div>
+          <p class="result-hero-msg" id="resultHeroMsg">
+            Exceptional mastery! You answered all questions correctly.
+          </p>
+
+          <div class="result-stats-row">
+            <div class="result-stat-box">
+              <div class="val" id="resultAccuracy">100%</div>
+              <div class="lbl">Accuracy Score</div>
+            </div>
+            <div class="result-stat-box">
+              <div class="val" id="resultTimeTaken">04:12</div>
+              <div class="lbl">Time Taken</div>
+            </div>
+            <div class="result-stat-box">
+              <div class="val" id="resultAvgSpeed">16s / Q</div>
+              <div class="lbl">Average Speed</div>
+            </div>
+            <div class="result-stat-box">
+              <div class="val" id="resultRankEst">Top 1%</div>
+              <div class="lbl">Performance Tier</div>
+            </div>
+          </div>
+
+          <div class="results-action-buttons">
+            <button class="btn btn-primary" id="retakeQuizBtn">
+              <span>🔄</span> Retake Quiz
+            </button>
+            <button class="btn btn-secondary" id="drillMistakesBtn">
+              <span>⚠️</span> Drill Missed Questions Only
+            </button>
+            <button class="btn btn-secondary" id="backToDashboardBtn">
+              <span>🏠</span> Back to Dashboard
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Review Section -->
+        <div class="review-section-wrap">
+          <div class="section-header">
+            <div>
+              <h2><span>🔍</span> Detailed Solution Review</h2>
+              <p>Inspect every question, your selected answer, and official course solutions</p>
+            </div>
+            <div class="review-tabs">
+              <button class="review-tab-btn active" data-filter="all">All Questions</button>
+              <button class="review-tab-btn" data-filter="mistakes">Mistakes Only</button>
+              <button class="review-tab-btn" data-filter="flagged">Flagged</button>
+            </div>
+          </div>
+
+          <div id="reviewListContainer">
+            <!-- Review items rendered by app.js -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         VIEW 4: QUESTION BANK & STUDY HUB
+         ======================================================================= -->
+    <section id="bankView" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2><span>📚</span> Course Question Bank (150 Questions)</h2>
+          <p>Search, filter, and study all verified assignment questions and solutions</p>
+        </div>
+        <div style="font-size:0.85rem; color:var(--accent-cyan); font-weight:700;" id="bankTotalCount">
+          150 Questions Found
+        </div>
+      </div>
+
+      <!-- Controls & Search -->
+      <div class="bank-controls-bar">
+        <div class="bank-search-input-wrap">
+          <span class="bank-search-icon">🔍</span>
+          <input type="text" class="bank-search-input" id="bankSearchInput" placeholder="Search keywords (e.g., Roofline, Amdahl, LoRA, DDP, XLA, Spark)...">
+        </div>
+
+        <select class="bank-filter-select" id="bankWeekSelect">
+          <option value="all">All Weeks (Weeks 1 to 10)</option>
+          <option value="1">Week 1: Hardware & Memory Wall</option>
+          <option value="2">Week 2: Docker, CUDA & GPU Containers</option>
+          <option value="3">Week 3: Kubernetes & Service Mesh</option>
+          <option value="4">Week 4: PyTorch Acceleration</option>
+          <option value="5">Week 5: TensorFlow & XLA Compiler</option>
+          <option value="6">Week 6: LLM Fine-Tuning & PEFT</option>
+          <option value="7">Week 7: Distributed Deep Learning</option>
+          <option value="8">Week 8: Training Dynamics & Scaling</option>
+          <option value="9">Week 9: Graph Compilers & vLLM</option>
+          <option value="10">Week 10: Big Data & Spark</option>
+        </select>
+
+        <select class="bank-filter-select" id="bankCategorySelect">
+          <option value="all">All Categories</option>
+          <option value="Hardware & Architecture">Hardware & Architecture</option>
+          <option value="Containers & Cloud">Containers & Cloud</option>
+          <option value="Framework Acceleration">Framework Acceleration</option>
+          <option value="LLMs & Fine-Tuning">LLMs & Fine-Tuning</option>
+          <option value="Distributed Training">Distributed Training</option>
+          <option value="Training Dynamics">Training Dynamics</option>
+          <option value="Compilers & Serving">Compilers & Serving</option>
+          <option value="Data Engineering">Data Engineering</option>
+        </select>
+
+        <button class="btn btn-secondary btn-sm" id="bankToggleAllSolutionsBtn">
+          Reveal All Solutions
+        </button>
+      </div>
+
+      <!-- Questions List -->
+      <div class="bank-questions-grid" id="bankQuestionsContainer">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         VIEW 5: SAVED BOOKMARKS & WEAK AREAS
+         ======================================================================= -->
+    <section id="bookmarksView" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2><span>🔖</span> Saved Bookmarks & Weak Areas</h2>
+          <p>Review questions you have starred or missed in previous quiz sessions</p>
+        </div>
+      </div>
+
+      <div class="mode-grid">
+        <div class="mode-card custom" onclick="startBookmarksQuiz()">
+          <div>
+            <span class="mode-badge amber">★ Saved Flashcards</span>
+            <h3 class="mode-title">Bookmarked Questions</h3>
+            <p class="mode-desc">
+              Practice only the questions you have handpicked and starred for quick reference before the exam.
+            </p>
+          </div>
+          <div class="mode-meta">
+            <div class="mode-meta-item"><span id="savedBookmarksCount">0</span> Bookmarked</div>
+            <div class="mode-meta-item" style="color:var(--accent-amber); font-weight:700;">Practice Bookmarks →</div>
+          </div>
+        </div>
+
+        <div class="mode-card exam" onclick="startWeakAreasQuiz()">
+          <div>
+            <span class="mode-badge purple">⚠️ Mistakes Ledger</span>
+            <h3 class="mode-title">Recorded Weak Areas</h3>
+            <p class="mode-desc">
+              Questions you have previously answered incorrectly across all quiz modes. Drills them until you achieve 100% mastery.
+            </p>
+          </div>
+          <div class="mode-meta">
+            <div class="mode-meta-item"><span id="savedMistakesCount">0</span> Questions to Fix</div>
+            <div class="mode-meta-item" style="color:var(--accent-purple); font-weight:700;">Drill Mistakes →</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         VIEW 6: MASTERY & ANALYTICS HISTORY
+         ======================================================================= -->
+    <section id="analyticsView" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2><span>📊</span> Performance & Attempt History</h2>
+          <p>Track your score trajectory and preparation consistency over time</p>
+        </div>
+      </div>
+
+      <div id="analyticsHistoryList">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       CUSTOM QUIZ STUDIO MODAL
+       ========================================================================= -->
+  <div class="modal-overlay" id="customQuizModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem; font-weight:800;">⚙️ Custom Quiz Studio</h3>
+        <button class="modal-close-btn" id="closeModalBtn">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Number of Questions: <strong id="customQCountDisplay" style="color:var(--accent-cyan);">15</strong>
+        </label>
+        <input type="range" class="form-range" id="customQCountSlider" min="5" max="50" step="5" value="15">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Weeks to Include:</label>
+        <div class="weeks-checkbox-grid">
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="1" checked> Week 1: Hardware & Memory
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="2" checked> Week 2: Docker & CUDA
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="3" checked> Week 3: Kubernetes & Istio
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="4" checked> Week 4: PyTorch Acceleration
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="5" checked> Week 5: TensorFlow & XLA
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="6" checked> Week 6: LLMs & PEFT
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="7" checked> Week 7: Distributed Deep Learning
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="8" checked> Week 8: Training Dynamics
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="9" checked> Week 9: Graph Compilers & vLLM
+          </label>
+          <label class="custom-checkbox-label">
+            <input type="checkbox" class="week-checkbox" value="10" checked> Week 10: Big Data & Spark
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Feedback Mode:</label>
+        <select class="bank-filter-select" id="customQuizModeSelect" style="width:100%;">
+          <option value="practice">Instant Learning Mode (Feedback & Explanation After Each Answer)</option>
+          <option value="exam">Simulated Exam Mode (Timed, Submit & Review at the End)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Time Limit:</label>
+        <select class="bank-filter-select" id="customQuizTimerSelect" style="width:100%;">
+          <option value="15">15 Minutes</option>
+          <option value="25">25 Minutes</option>
+          <option value="45">45 Minutes</option>
+          <option value="60">60 Minutes</option>
+          <option value="0">Untimed (Practice Mode)</option>
+        </select>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:2rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('customQuizModal').classList.remove('open')">Cancel</button>
+        <button class="btn btn-primary" id="startCustomQuizSubmitBtn">🚀 Launch Custom Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Master Data & Application Scripts -->
+  <script src="nptel_quiz_master_data.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
