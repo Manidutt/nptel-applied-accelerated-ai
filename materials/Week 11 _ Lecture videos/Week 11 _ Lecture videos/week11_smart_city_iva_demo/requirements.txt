@@ -1,5 +1,0 @@
-ultralytics==8.4.141
-opencv-python>=4.10
-numpy>=1.26
-PyYAML>=6.0
-yt-dlp>=2025.1
