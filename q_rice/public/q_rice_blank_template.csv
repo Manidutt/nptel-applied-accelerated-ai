@@ -1,0 +1,4 @@
+question,type,option_a,option_b,option_c,option_d,correct_answer,marks,negative_marks,explanation
+"Enter your first single-choice question here",single_choice,"Option A text","Option B text","Option C text","Option D text",A,1,0,"Explanation for why Option A is correct."
+"Enter your multiple-choice question here (select multiple)",multiple_choice,"Option A text","Option B text","Option C text","Option D text","A|C",2,0.5,"Explanation for why A and C are correct."
+"Enter your True or False statement here",true_false,"True","False",,,,A,1,0,"Explanation for why this statement is True."

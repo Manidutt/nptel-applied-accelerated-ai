@@ -1,0 +1,289 @@
+// Q_Rice — Database Schema (Prisma ORM)
+// Default engine: SQLite (local, persistent, zero-config)
+// Can be switched to PostgreSQL for production by updating provider to "postgresql" and DATABASE_URL in .env
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  name         String
+  role         String      @default("STUDENT") // ADMIN, INSTRUCTOR, STUDENT
+  avatarUrl    String?
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relationships
+  taughtClasses    Class[]             @relation("InstructorClasses")
+  enrolledClasses  ClassEnrollment[]
+  createdQuizzes   Quiz[]              @relation("InstructorQuizzes")
+  questionBanks    QuestionBank[]
+  questions        Question[]
+  quizAttempts     QuizAttempt[]
+  sessionJoins     SessionParticipant[]
+  auditLogs        AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Class {
+  id           String            @id @default(uuid())
+  name         String
+  code         String            @unique
+  description  String?
+  instructorId String
+  instructor   User              @relation("InstructorClasses", fields: [instructorId], references: [id], onDelete: Cascade)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  enrollments  ClassEnrollment[]
+  quizzes      Quiz[]
+
+  @@index([instructorId])
+  @@index([code])
+}
+
+model ClassEnrollment {
+  id        String   @id @default(uuid())
+  classId   String
+  userId    String
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime @default(now())
+
+  @@unique([classId, userId])
+}
+
+model QuestionBank {
+  id           String     @id @default(uuid())
+  title        String
+  description  String?
+  subject      String     @default("General")
+  instructorId String
+  instructor   User       @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  questions    Question[]
+
+  @@index([instructorId])
+}
+
+model Question {
+  id            String          @id @default(uuid())
+  instructorId  String
+  bankId        String?
+  instructor    User            @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  bank          QuestionBank?   @relation(fields: [bankId], references: [id], onDelete: SetNull)
+  statement     String
+  type          String          @default("single_choice") // single_choice, multiple_choice, true_false
+  marks         Float           @default(1.0)
+  negativeMarks Float           @default(0.0)
+  explanation   String?
+  tags          String?         // Comma-separated tags
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  options       QuestionOption[]
+  quizQuestions QuizQuestion[]
+  responses     StudentResponse[]
+
+  @@index([instructorId])
+  @@index([type])
+}
+
+model QuestionOption {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  optionKey  String   // A, B, C, D
+  text       String
+  isCorrect  Boolean  @default(false)
+
+  @@unique([questionId, optionKey])
+}
+
+model Quiz {
+  id                      String         @id @default(uuid())
+  title                   String
+  description             String?
+  instructions            String?
+  subject                 String         @default("General")
+  instructorId            String
+  classId                 String?
+  instructor              User           @relation("InstructorQuizzes", fields: [instructorId], references: [id], onDelete: Cascade)
+  class                   Class?         @relation(fields: [classId], references: [id], onDelete: SetNull)
+  
+  status                  String         @default("DRAFT") // DRAFT, SCHEDULED, PUBLISHED, ACTIVE, COMPLETED, ARCHIVED
+  accessCode              String         @unique
+  durationMinutes         Int            @default(30)
+  totalMarks              Float          @default(0.0)
+  passingPercentage       Float          @default(50.0)
+  allowedAttempts         Int            @default(1)
+  
+  // Scoring Policies
+  negativeMarkingEnabled  Boolean        @default(false)
+  partialCreditEnabled    Boolean        @default(false)
+  releaseResultsImmediately Boolean      @default(true)
+  
+  // Exam Integrity Settings
+  integrityEnabled        Boolean        @default(true)
+  requireFullscreen       Boolean        @default(false)
+  tabSwitchThreshold      Int            @default(3)
+  autoSubmitOnViolation   Boolean        @default(false)
+  flagForReview           Boolean        @default(true)
+
+  // Scheduling
+  startTime               DateTime?
+  endTime                 DateTime?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  questions               QuizQuestion[]
+  sessions                QuizSession[]
+  attempts                QuizAttempt[]
+
+  @@index([instructorId])
+  @@index([accessCode])
+  @@index([status])
+}
+
+model QuizQuestion {
+  id            String   @id @default(uuid())
+  quizId        String
+  questionId    String
+  orderIndex    Int      @default(0)
+  marks         Float    @default(1.0)
+  negativeMarks Float    @default(0.0)
+
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([quizId, questionId])
+  @@index([quizId, orderIndex])
+}
+
+model QuizSession {
+  id                   String               @id @default(uuid())
+  quizId               String
+  quiz                 Quiz                 @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  sessionCode          String               @unique // 6-digit session code for live join
+  mode                 String               @default("INSTRUCTOR_LED") // INSTRUCTOR_LED, SELF_PACED
+  status               String               @default("WAITING") // WAITING, ACTIVE, PAUSED, COMPLETED
+  currentQuestionIndex Int                  @default(0)
+  startedAt            DateTime?
+  endedAt              DateTime?
+  createdAt            DateTime             @default(now())
+
+  participants         SessionParticipant[]
+  attempts             QuizAttempt[]
+
+  @@index([sessionCode])
+  @@index([status])
+}
+
+model SessionParticipant {
+  id               String      @id @default(uuid())
+  sessionId        String
+  userId           String
+  session          QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connectionStatus String      @default("CONNECTED") // CONNECTED, DISCONNECTED
+  joinedAt         DateTime    @default(now())
+
+  @@unique([sessionId, userId])
+}
+
+model QuizAttempt {
+  id                  String            @id @default(uuid())
+  quizId              String
+  sessionId           String?
+  userId              String
+  attemptNumber       Int               @default(1)
+  status              String            @default("IN_PROGRESS") // IN_PROGRESS, SUBMITTED, AUTO_SUBMITTED, FLAGGED
+  
+  // Scoring
+  totalScore          Float             @default(0.0)
+  maxScore            Float             @default(0.0)
+  percentage          Float             @default(0.0)
+  isPassed            Boolean           @default(false)
+  correctCount        Int               @default(0)
+  incorrectCount      Int               @default(0)
+  unansweredCount     Int               @default(0)
+  timeSpentSeconds    Int               @default(0)
+  
+  // Integrity Summary
+  integrityEventCount Int               @default(0)
+  isFlaggedForReview  Boolean           @default(false)
+  
+  startedAt           DateTime          @default(now())
+  submittedAt         DateTime?
+  
+  quiz                Quiz              @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  session             QuizSession?      @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  responses           StudentResponse[]
+  integrityEvents     IntegrityEvent[]
+
+  @@index([quizId, userId])
+  @@index([status])
+}
+
+model StudentResponse {
+  id           String      @id @default(uuid())
+  attemptId    String
+  questionId   String
+  selectedKeys String      // E.g. "B" or "A|C" or "" for unanswered
+  isFlagged    Boolean     @default(false) // Flagged for review by student
+  isCorrect    Boolean     @default(false)
+  marksAwarded Float       @default(0.0)
+  answeredAt   DateTime    @default(now())
+
+  attempt      QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question     Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId])
+}
+
+model IntegrityEvent {
+  id          String      @id @default(uuid())
+  attemptId   String
+  eventType   String      // TAB_SWITCH, WINDOW_BLUR, FULLSCREEN_EXIT, RESIZE
+  description String?
+  violationNo Int         @default(1)
+  timestamp   DateTime    @default(now())
+
+  attempt     QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@index([attemptId])
+  @@index([eventType])
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  action       String   // E.g. "USER_LOGIN", "QUIZ_PUBLISHED", "CSV_IMPORTED", "SESSION_STARTED"
+  resourceType String   // "Quiz", "User", "QuestionBank", "Session"
+  resourceId   String?
+  details      String?  // JSON string
+  ipAddress    String?
+  timestamp    DateTime @default(now())
+
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+}
